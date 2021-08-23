@@ -1,3 +1,4 @@
+from model import Brain
 import pydealer
 import numpy as np
 
@@ -46,6 +47,7 @@ class Agent():
         self.first_sequence = None
         self.second_sequence = None
         self.matrix = self.get_matrix()
+        self.model = Brain().model
 
     def get_matrix(self):
         matrix_representation = np.zeros((4,13))
@@ -61,7 +63,12 @@ class Agent():
         Uses NN to choose which card must be discarded
         returns card to be discarded.
         """
-        pass
+        input_matrix = self.matrix.reshape(4,13,1)
+        input_matrix = np.expand_dims(input_matrix,axis=0)
+        print(input_matrix.shape)
+        card_to_drop = self.model.predict(input_matrix)
+        return card_to_drop
+        
 
     def draw_deck_top(self,deck):
         return deck.draw(1)
@@ -159,6 +166,6 @@ class Agent():
         
         return reward
 
-grandma = Agent(hand)
-print(grandma.matrix)
-grandma.evaluate_score()
+# grandma = Agent(hand)
+# print(grandma.matrix)
+# grandma.evaluate_score()
