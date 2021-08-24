@@ -2,14 +2,6 @@ from model import Brain
 import pydealer
 import numpy as np
 
-deck = pydealer.Deck()
-
-deck.shuffle()
-cards = deck.deal(10)
-
-hand = pydealer.Stack()
-hand.add(cards)
-
 
 values = {
     "King": 13,
@@ -34,6 +26,29 @@ suits = {
     "Diamonds": 1
 }
 
+inverse_values = {
+    13:"King",
+    12:"Queen",
+    11:"Jack",
+    10:"10",
+    9:"9",
+    8:"8",
+    7:"7",
+    6:"6",
+    5:"5",
+    4:"4",
+    3:"3",
+    2:"2",
+    1:"Ace"
+}
+
+inverse_suits = {
+    4:"Spades",
+    3:"Hearts",
+    2:"Clubs",
+    1:"Diamonds"
+}
+
 
 def consecutive(data, stepsize=1):
     return np.split(data, np.where(np.diff(data) != stepsize)[0]+1)
@@ -43,9 +58,9 @@ class Agent():
         self.hand = hand
         self.score = 0
         self.done = False
-        self.pure_sequence = None
-        self.first_sequence = None
-        self.second_sequence = None
+        self.pure_sequence = 0
+        self.first_sequence = 0
+        self.second_sequence = 0
         self.matrix = self.get_matrix()
         self.model = Brain().model
 
@@ -65,15 +80,20 @@ class Agent():
         """
         input_matrix = self.matrix.reshape(4,13,1)
         input_matrix = np.expand_dims(input_matrix,axis=0)
-        print(input_matrix.shape)
-        card_to_drop = self.model.predict(input_matrix)
+        
+        card_ = self.model.predict(input_matrix)
+        suit = np.argmax(card_[0])
+        value = np.argmax(card_[1])
+        print("Dropped Suit: ",suit)
+        print("Dropped Value: ",value)
+        card_to_drop = pydealer.Card(inverse_values[value+1], inverse_suits[suit+1])
         return card_to_drop
         
 
     def draw_deck_top(self,deck):
-        return deck.draw(1)
+        return deck.deal(1)[0]
 
-    def play_turn(self,prev_player_card):
+    def play_turn(self,prev_player_card,deck):
         '''
         r1 = evaluate score of 10 cards.
         pick prev pplayer card.
@@ -92,37 +112,46 @@ class Agent():
         final_card_to_drop = None
 
         r1 = self.evaluate_score()
-
+        print('aaaaaaaaaaaaaaa',self.count_elements())
         # pick prev players card and put in matrix.
-        matrix_representation[suits[prev_player_card.suit]-1][values[prev_player_card.value]-1] = values[prev_player_card.value]
-
+        self.matrix[suits[prev_player_card.suit]-1][values[prev_player_card.value]-1] = values[prev_player_card.value]
+        print('bbbbbbbbbbbbbbb',self.count_elements())
         # drop card
         drop_card = self.drop_card_from_hand()
-        matrix_representation[suits[drop_card.suit]-1][values[drop_card.value]-1] = 0
-
+        self.matrix[suits[drop_card.suit]-1][values[drop_card.value]-1] = 0
+        print('ccccccccccccccc',self.count_elements())
         r2 = self.evaluate_score()  
         if r2 <= r1:
-            matrix_representation[suits[drop_card.suit]-1][values[drop_card.value]-1] = values[drop_card.value]
-
-            matrix_representation[suits[prev_player_card.suit]-1][values[prev_player_card.value]-1] = 0
-
-            new_card_from_deck = self.draw_deck_top()
-            matrix_representation[suits[new_card_from_deck.suit]-1][values[new_card_from_deck.value]-1] = values[new_card_from_deck.value]
+            self.matrix[suits[drop_card.suit]-1][values[drop_card.value]-1] = values[drop_card.value]
+            print('dddddddddddddddd',self.count_elements())
+            self.matrix[suits[prev_player_card.suit]-1][values[prev_player_card.value]-1] = 0
+            print('eeeeeeeeeeeeeeee',self.count_elements())
+            new_card_from_deck = self.draw_deck_top(deck)
+            self.matrix[suits[new_card_from_deck.suit]-1][values[new_card_from_deck.value]-1] = values[new_card_from_deck.value]
+            print('ffffffffffffffff',self.count_elements())
             final_card_to_drop = self.drop_card_from_hand()
+            
+            self.matrix[suits[final_card_to_drop.suit]-1][values[final_card_to_drop.value]-1] = 0        
+            print('gggggggggggggggg',self.count_elements())
 
         else:
             final_card_to_drop = drop_card
-
+            print('hhhhhhhhhhhhhhhh',self.count_elements())
+        
         r3 = self.evaluate_score()
-
+        print('iiiiiiiiiiiiiiiii',self.count_elements())
         if self.pure_sequence + self.first_sequence + self.second_sequence == 3 and self.pure_sequence > 0:
             self.done = True
 
-        matrix_representation[suits[final_card_to_drop.suit]-1][values[final_card_to_drop.value]-1] = 0        
 
-        return final_card_to_drop, self.done
+        return final_card_to_drop, self.done, r3
 
-        
+    def count_elements(self):
+        t = 0
+        for row in self.matrix:
+            t += np.count_nonzero(row)
+        return t
+
     def evaluate_score(self):
         isolated_cards = 0
         partial_sequences = 0
@@ -164,8 +193,25 @@ class Agent():
         reward_weight_factor = 1
         reward = ((self.pure_sequence + self.first_sequence + self.second_sequence) * reward_weight_factor) + (isolated_cards * -0.5) + (partial_sequences * 0.7)
         
+        print('pure sequence: ', self.pure_sequence)
+        print('first sequence: ', self.first_sequence)
+        print('second sequence: ', self.second_sequence)
+
         return reward
 
-# grandma = Agent(hand)
-# print(grandma.matrix)
-# grandma.evaluate_score()
+deck = pydealer.Deck()
+
+deck.shuffle()
+cards = deck.deal(10)
+
+hand = pydealer.Stack()
+hand.add(cards)
+
+grandma = Agent(hand)
+prev_card = deck.deal(1)[0]
+
+print(grandma.matrix)
+
+print(grandma.play_turn(prev_card,deck))
+
+print(grandma.matrix)
