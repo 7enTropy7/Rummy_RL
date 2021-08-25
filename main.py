@@ -34,10 +34,17 @@ hand = pydealer.Stack()
 hand.add(cards)
 
 agent = Agent(hand)
-card = agent.drop_card_from_hand()
-suit = np.argmax(card[0])
-value = np.argmax(card[1])
-print(value,suit)
-card_to_drop = pydealer.Card(inverse_values[value+1], inverse_suits[suit+1])
-print(card_to_drop)
+
+print(agent.matrix)
+
+agent.get_binary_matrix()
+
+index = int(input('index: '))
+
+print(agent.card_from_index(index))
+
+# card = agent.drop_card_from_hand()
+# value, suit = np.argmax(card[0])
+# card_to_drop = pydealer.Card(inverse_values[value+1], inverse_suits[suit+1])
+# print(card_to_drop)
 

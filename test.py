@@ -63,6 +63,12 @@ class Agent():
         self.second_sequence = 0
         self.matrix = self.get_matrix()
         self.model = Brain().model
+        self.binary_matrix = None
+
+    def get_binary_matrix(self):
+        self.binary_matrix = self.matrix.reshape(1,52)
+        self.binary_matrix = np.where(self.binary_matrix > 0, 1, 0)
+
 
     def get_matrix(self):
         matrix_representation = np.zeros((4,13))
@@ -78,17 +84,31 @@ class Agent():
         Uses NN to choose which card must be discarded
         returns card to be discarded.
         """
-        input_matrix = self.matrix.reshape(4,13,1)
+        self.get_binary_matrix()
+        input_matrix = self.binary_matrix
         input_matrix = np.expand_dims(input_matrix,axis=0)
         
-        card_ = self.model.predict(input_matrix)
-        suit = np.argmax(card_[0])
-        value = np.argmax(card_[1])
-        print("Dropped Suit: ",suit)
-        print("Dropped Value: ",value)
+        output_ = self.model.predict(input_matrix)
+        index = np.argmax(output_)
+
+        value, suit = self.card_from_index(index)
         card_to_drop = pydealer.Card(inverse_values[value+1], inverse_suits[suit+1])
         return card_to_drop
         
+    def card_from_index(self,index):
+        c = 0
+        ans = 0
+        print(self.binary_matrix.shape[1])
+        for i in range(self.binary_matrix.shape[1]):
+            if self.binary_matrix[0][i] == 1:
+                if c == index:
+                    ans = i
+                    break
+                c += 1
+        print('ans: ',ans)
+        value = ans % 13
+        suit = ans // 13
+        return value, suit
 
     def draw_deck_top(self,deck):
         return deck.deal(1)[0]
@@ -112,34 +132,40 @@ class Agent():
         final_card_to_drop = None
 
         r1 = self.evaluate_score()
-        print('aaaaaaaaaaaaaaa',self.count_elements())
+        print('pure sequence: ', self.pure_sequence)
+        print('first sequence: ', self.first_sequence)
+        print('second sequence: ', self.second_sequence)
+
         # pick prev players card and put in matrix.
         self.matrix[suits[prev_player_card.suit]-1][values[prev_player_card.value]-1] = values[prev_player_card.value]
-        print('bbbbbbbbbbbbbbb',self.count_elements())
+        
         # drop card
         drop_card = self.drop_card_from_hand()
         self.matrix[suits[drop_card.suit]-1][values[drop_card.value]-1] = 0
-        print('ccccccccccccccc',self.count_elements())
+        
         r2 = self.evaluate_score()  
         if r2 <= r1:
             self.matrix[suits[drop_card.suit]-1][values[drop_card.value]-1] = values[drop_card.value]
-            print('dddddddddddddddd',self.count_elements())
+            
             self.matrix[suits[prev_player_card.suit]-1][values[prev_player_card.value]-1] = 0
-            print('eeeeeeeeeeeeeeee',self.count_elements())
+            
             new_card_from_deck = self.draw_deck_top(deck)
             self.matrix[suits[new_card_from_deck.suit]-1][values[new_card_from_deck.value]-1] = values[new_card_from_deck.value]
-            print('ffffffffffffffff',self.count_elements())
+            
             final_card_to_drop = self.drop_card_from_hand()
             
             self.matrix[suits[final_card_to_drop.suit]-1][values[final_card_to_drop.value]-1] = 0        
-            print('gggggggggggggggg',self.count_elements())
+            
 
         else:
             final_card_to_drop = drop_card
-            print('hhhhhhhhhhhhhhhh',self.count_elements())
+            
         
         r3 = self.evaluate_score()
-        print('iiiiiiiiiiiiiiiii',self.count_elements())
+        print('pure sequence: ', self.pure_sequence)
+        print('first sequence: ', self.first_sequence)
+        print('second sequence: ', self.second_sequence)
+        
         if self.pure_sequence + self.first_sequence + self.second_sequence == 3 and self.pure_sequence > 0:
             self.done = True
 
@@ -153,6 +179,11 @@ class Agent():
         return t
 
     def evaluate_score(self):
+        self.pure_sequence = 0
+        self.first_sequence = 0
+        self.second_sequence = 0
+
+        
         isolated_cards = 0
         partial_sequences = 0
         for row in self.matrix:
@@ -193,9 +224,7 @@ class Agent():
         reward_weight_factor = 1
         reward = ((self.pure_sequence + self.first_sequence + self.second_sequence) * reward_weight_factor) + (isolated_cards * -0.5) + (partial_sequences * 0.7)
         
-        print('pure sequence: ', self.pure_sequence)
-        print('first sequence: ', self.first_sequence)
-        print('second sequence: ', self.second_sequence)
+        
 
         return reward
 
@@ -208,6 +237,7 @@ hand = pydealer.Stack()
 hand.add(cards)
 
 grandma = Agent(hand)
+
 prev_card = deck.deal(1)[0]
 
 print(grandma.matrix)
