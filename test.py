@@ -105,7 +105,7 @@ class Agent():
                     ans = i
                     break
                 c += 1
-        print('ans: ',ans)
+
         value = ans % 13
         suit = ans // 13
         return value, suit
@@ -194,8 +194,10 @@ class Agent():
                     isolated_cards += 1
                 elif t.size == 2:
                     partial_sequences += 1
-                elif t.size == 3 or t.size == 4:
+                elif t.size == 3 or t.size == 4 or t.size == 5:
                     row_score += 1
+                elif t.size == 6 or t.size == 7:
+                    row_score += 2
             self.pure_sequence += row_score
         
         if self.pure_sequence == 2:
@@ -212,7 +214,7 @@ class Agent():
                 isolated_cards += 1
             elif col_score == 2:
                 partial_sequences += 1
-            elif col_score == 3:
+            elif col_score >= 3:
                 col_set += 1
 
         if col_set > 0:
@@ -222,7 +224,7 @@ class Agent():
                 self.second_sequence += 1
 
         reward_weight_factor = 1
-        reward = ((self.pure_sequence + self.first_sequence + self.second_sequence) * reward_weight_factor) + (isolated_cards * -0.5) + (partial_sequences * 0.7)
+        reward = ((self.pure_sequence + self.first_sequence + self.second_sequence) * reward_weight_factor) + (partial_sequences * 0.15) #+ (isolated_cards * (-0.5)) 
         
         
 
