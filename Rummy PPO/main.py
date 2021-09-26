@@ -78,6 +78,8 @@ for n in range(n_games):
     p_score = [0,0,0] 
     rounds = 0
     print('---------------------- New Game -----------------------------')
+    print('Game number:{}'.format(n))
+    
     while not done:
         for i in range(3):
             
@@ -88,7 +90,9 @@ for n in range(n_games):
             p_score[i] = reward
             p_score[i] = round(p_score[i],2)
             if done:
-                print('Winner is player: {} \n Winner\'s matrix: \n {}'.format(i+1,players[i].matrix))
+                print('############# WINNER ###############')
+                print('Player {} won the game! \nWinner\'s Hand: \n {}'.format(i+1,players[i].matrix))
+                print('!!!!!!!!!!!! GAME OVER !!!!!!!!!!!!')
                 global_done = True
                 break
             
@@ -106,8 +110,6 @@ for n in range(n_games):
             done = True
                   
         print('Round:{}  Scores:{}  Done:{}'.format(rounds,p_score,done))
-    
-    print('Game number:{}'.format(n))
     
     if global_done:
         break
