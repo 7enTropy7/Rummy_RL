@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Sep 12 16:02:35 2021
-
-@author: sense
-"""
 import pydealer
 from grandma import Grandma
 import numpy as np
@@ -86,14 +80,10 @@ for n in range(n_games):
     print('---------------------- New Game -----------------------------')
     while not done:
         for i in range(3):
-            # print("Before action: \n")
-            #print(players[i].matrix)
             
             if rounds == 0:
                 print(players[i].matrix,'\n')
-            
-            
-            
+                        
             table_card,action, probs, crit_val, reward, done = players[i].choose_action(table_card, deck)
             p_score[i] = reward
             p_score[i] = round(p_score[i],2)
@@ -110,23 +100,15 @@ for n in range(n_games):
                 done = True
                 break
             
-            # print("After action: \n", players[i].matrix)
-            # print('---------------------------------')
         rounds += 1
         
         if rounds > 15:
             done = True
-            
-        
-            
+                  
         print('Round:{}  Scores:{}  Done:{}'.format(rounds,p_score,done))
     
     print('Game number:{}'.format(n))
     
     if global_done:
         break
-    
-    
-     
-
     

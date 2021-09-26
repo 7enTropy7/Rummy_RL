@@ -1,8 +1,6 @@
-from model import Agent
 import pydealer
 import numpy as np
 import torch as T
-
 
 values = {
     "King": 13,
@@ -50,7 +48,6 @@ inverse_suits = {
     1:"Diamonds"
 }
 
-
 def consecutive(data, stepsize=1):
     return np.split(data, np.where(np.diff(data) != stepsize)[0]+1)
 
@@ -63,7 +60,7 @@ class Grandma():
         self.first_sequence = 0
         self.second_sequence = 0
         self.matrix = self.get_matrix()
-        self.model = agent#Agent(11,(52,))
+        self.model = agent
         self.binary_matrix = None
 
     def get_binary_matrix(self):
@@ -84,7 +81,6 @@ class Grandma():
 
         return matrix_representation
 
-
     def drop_card_from_hand(self):
         """
         Uses NN to choose which card must be discarded
@@ -99,12 +95,10 @@ class Grandma():
         card_to_drop = pydealer.Card(inverse_values[value_+1], inverse_suits[suit_+1])
 
         return card_to_drop, action, probs, value
-
         
     def card_from_index(self,index):
         c = 0
         ans = 0
-        #print(self.binary_matrix.shape[1])
         for i in range(self.binary_matrix.shape[1]):
             if self.binary_matrix[0][i] == 1:
                 if c == index:
@@ -123,9 +117,6 @@ class Grandma():
         final_card_to_drop = None
 
         r1 = self.evaluate_score()
-        # print('pure sequence: ', self.pure_sequence)
-        # print('first sequence: ', self.first_sequence)
-        # print('second sequence: ', self.second_sequence)
 
         # pick prev players card and put in matrix.
         self.matrix[suits[prev_player_card.suit]-1][values[prev_player_card.value]-1] = values[prev_player_card.value]
@@ -151,11 +142,7 @@ class Grandma():
         else:
             final_card_to_drop = drop_card
             
-        
         r3 = self.evaluate_score()
-        # print('pure sequence: ', self.pure_sequence)
-        # print('first sequence: ', self.first_sequence)
-        # print('second sequence: ', self.second_sequence)
         
         if self.pure_sequence + self.first_sequence + self.second_sequence == 3 and self.pure_sequence > 0:
             self.done = True
@@ -176,7 +163,6 @@ class Grandma():
         self.first_sequence = 0
         self.second_sequence = 0
 
-        
         isolated_cards = 0
         partial_sequences = 0
         for row in self.matrix:
@@ -199,7 +185,6 @@ class Grandma():
 
         col_set = 0
         transpose_matrix = np.transpose(self.matrix)
-        #print('------------------')
         col_score = 0
         for row in transpose_matrix:
             col_score = np.count_nonzero(row)
@@ -219,7 +204,4 @@ class Grandma():
         reward_weight_factor = 1
         reward = ((self.pure_sequence + self.first_sequence + self.second_sequence) * reward_weight_factor) + (partial_sequences * 0.15) #+ (isolated_cards * (-0.5)) 
         
-        
-
         return reward
-

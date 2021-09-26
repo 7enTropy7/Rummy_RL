@@ -93,8 +93,7 @@ class CriticNetwork(nn.Module):
         )
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
-        # self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
-        self.device = T.device('cpu')
+        self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
         self.to(self.device)
 
     def forward(self, state):
@@ -135,7 +134,6 @@ class Agent:
 
     def choose_action(self, observation):
         state = T.tensor(observation, dtype=T.float).to(self.actor.device)
-        # print('Shapeof inp tensor -----------',state.shape)
         dist = self.actor(state)
         value = self.critic(state)
         action = dist.sample()
@@ -151,7 +149,6 @@ class Agent:
             state_arr, action_arr, old_prob_arr, vals_arr,\
             reward_arr, dones_arr, batches = \
                     self.memory.generate_batches()
-            #print(vals_arr.shape)
             values = vals_arr
             advantage = np.zeros(len(reward_arr), dtype=np.float32)
 
@@ -196,31 +193,3 @@ class Agent:
                 self.critic.optimizer.step()
 
         self.memory.clear_memory()               
-
-
-
-# import tensorflow as tf
-# import numpy as np
-# from keras.models import Sequential, Model
-# from keras.layers import Dense, Dropout, Activation, Flatten, Input
-# from keras.layers import Convolution2D, MaxPooling2D
-# from keras.utils import np_utils
-
-# class Brain():
-#     def __init__(self, input_shape=(1,52)):
-#         self.input_shape = input_shape
-#         self.model = self.build_model()
-
-#     def build_model(self):
-#         model = Sequential()
-#         model.add(Dense(512, input_shape=self.input_shape))
-#         model.add(Activation('relu'))
-#         model.add(Dropout(0.2))
-#         model.add(Dense(512))
-#         model.add(Activation('relu'))
-#         model.add(Dropout(0.2))
-#         model.add(Dense(11))
-#         model.add(Activation('softmax'))
-#         print(model.summary())
-#         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-#         return model
