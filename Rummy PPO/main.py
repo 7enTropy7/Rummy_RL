@@ -51,6 +51,8 @@ inverse_suits = {
 
 agent = Agent(11,(52,),n_epochs=5)
 
+agent.load_models()
+
 def reset():
     players = []
     deck = pydealer.Deck()
@@ -94,6 +96,7 @@ for n in range(n_games):
                 print('Player {} won the game! \nWinner\'s Hand: \n {}'.format(i+1,players[i].matrix))
                 print('!!!!!!!!!!!! GAME OVER !!!!!!!!!!!!')
                 global_done = True
+                agent.save_models()
                 break
             
             players[i].remember(players[i].binary_matrix, action, probs, crit_val, reward, done)
