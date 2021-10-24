@@ -1,6 +1,5 @@
 from aiohttp import web
 
-# We kick off our server
 from socketio_server import app
 
 if __name__ == '__main__':
