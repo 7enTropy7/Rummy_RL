@@ -6,10 +6,11 @@ import pickle
 loop = asyncio.get_event_loop()
 sio = socketio.AsyncClient()
 
-client_name = 'client_C'
+client_name = 'client_A'
 client_status = 'standby'
 hand = None
 server_status = 'standby'
+has_played = False
 
 @sio.event
 async def connect():
@@ -20,9 +21,16 @@ async def connect():
 
 @sio.event
 async def client_status_callback(data):
-    global server_status, hand
-    server_status = data
-    print('Server Status: ',server_status)
+    global server_status, hand, has_played
+    server_status = data['server_status']
+    current_player = data['current_player']
+    print('Server Status: ' + str(server_status) + '   Current Player: ' + str(current_player))
+    if server_status == 'ready' and current_player == client_name:
+        print('Client ' + str(client_name) + ' has played')
+        has_played = True
+    else:
+        has_played = False
+
 
 @sio.on('set_hand')
 async def set_hand(data):
@@ -32,12 +40,12 @@ async def set_hand(data):
 
 @sio.event
 async def track_status():
-    global server_status, client_name
+    global server_status, client_name, has_played
     while True:
-        await sio.emit('client_status',{'client_name':client_name,'client_status':client_status}, callback=client_status_callback)
-        await sio.sleep(5)
-        if server_status == 'ready':
-            break
+        await sio.emit('client_status',{'client_name':client_name,'client_status':client_status, 'has_played':has_played}, callback=client_status_callback)
+        await sio.sleep(10)
+        # if server_status == 'ready':
+            # break
     
 async def start_client():
     await sio.connect('http://localhost:9999', transports=['websocket'],

@@ -27,6 +27,8 @@ async def disconnect(sid):
 server_status = 'standby'
 
 client_statuses = {'client_A': 'standby', 'client_B': 'standby', 'client_C': 'standby'}
+current_player = 'client_A'
+
 
 hands = {'client_A': None, 'client_B': None, 'client_C': None}
 deck = pydealer.Deck()
@@ -34,8 +36,10 @@ deck.shuffle()
 
 @sio.on('client_status')
 async def client_status(sid, data):
-    global server_status, client_statuses, hands, deck
+    global server_status, client_statuses, hands, deck, current_player
     client_statuses[data['client_name']] = data['client_status']
+    has_played = data['has_played']
+
     
     if client_statuses[data['client_name']] == 'ready' and hands[data['client_name']] is None:
         cards = deck.deal(10)
@@ -46,11 +50,19 @@ async def client_status(sid, data):
 
     if check_for_readiness(client_statuses):
         server_status = 'ready'
+    
+    if server_status == 'ready' and has_played:
+        print(data['client_name'],' has played!')
+        if current_player == 'client_A':
+            current_player = 'client_B'
+        elif current_player == 'client_B':
+            current_player = 'client_C'
+        elif current_player == 'client_C':
+            current_player = 'client_A'
 
-        
-        
-    print(client_statuses, deck.size)
-    return server_status
+    # print(client_statuses, deck.size)
+    
+    return {'server_status': server_status, 'current_player' : current_player}
 
 def check_for_readiness(client_statuses):
     for client_status in client_statuses.values():
