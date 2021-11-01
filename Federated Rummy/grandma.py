@@ -110,10 +110,8 @@ class Grandma():
         suit = ans // 13
         return value, suit
 
-    def draw_deck_top(self,deck):
-        return deck.deal(1)[0]
-
-    def choose_action(self, prev_player_card, deck):
+    def choose_action(self, prev_player_card, deck_top_card):
+        flag_deck_top_card = False
         final_card_to_drop = None
 
         r1 = self.evaluate_score()
@@ -131,7 +129,9 @@ class Grandma():
             
             self.matrix[suits[prev_player_card.suit]-1][values[prev_player_card.value]-1] = 0
             
-            new_card_from_deck = self.draw_deck_top(deck)
+            new_card_from_deck = deck_top_card
+            flag_deck_top_card = True
+
             self.matrix[suits[new_card_from_deck.suit]-1][values[new_card_from_deck.value]-1] = values[new_card_from_deck.value]
             
             final_card_to_drop, action, probs, crit_val  = self.drop_card_from_hand()
@@ -149,7 +149,7 @@ class Grandma():
 
         reward = r3
         # returns action
-        return final_card_to_drop, action, probs, crit_val, reward, self.done 
+        return final_card_to_drop, action, probs, crit_val, reward, self.done, flag_deck_top_card 
 
 
     def count_elements(self):

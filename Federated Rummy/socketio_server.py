@@ -3,6 +3,7 @@ from aiohttp import web
 import pickle
 import random
 import pydealer
+from socketio import server
 
 sio = socketio.AsyncServer(cors_allowed_origins="*", async_mode='aiohttp', async_handlers=True)
 
@@ -29,17 +30,26 @@ server_status = 'standby'
 client_statuses = {'client_A': 'standby', 'client_B': 'standby', 'client_C': 'standby'}
 current_player = 'client_A'
 
-
 hands = {'client_A': None, 'client_B': None, 'client_C': None}
 deck = pydealer.Deck()
 deck.shuffle()
+table_top_card = deck.deal(1)[0]
+deck_top_card = None
+global_done = False
 
 @sio.on('client_status')
 async def client_status(sid, data):
-    global server_status, client_statuses, hands, deck, current_player
+    global server_status, client_statuses, hands, deck, current_player, table_top_card, deck_top_card, global_done
     client_statuses[data['client_name']] = data['client_status']
     has_played = data['has_played']
+    global_done = data['global_done']
+    flag_deck_top_card = data['flag_deck_top_card']
 
+    if deck.size == 1:
+        global_done = True
+
+    if global_done:
+        server_status = 'GAME OVER'
     
     if client_statuses[data['client_name']] == 'ready' and hands[data['client_name']] is None:
         cards = deck.deal(10)
@@ -48,11 +58,17 @@ async def client_status(sid, data):
         hands[data['client_name']] = hand
         await sio.emit('set_hand', {'hand':pickle.dumps(hands[data['client_name']])}, room=sid)
 
-    if check_for_readiness(client_statuses):
+    if check_for_readiness(client_statuses) and server_status != 'GAME OVER':
         server_status = 'ready'
-    
+        deck_top_card = deck[len(deck)-1]
+        
     if server_status == 'ready' and has_played:
-        print(data['client_name'],' has played!')
+        table_top_card = pickle.loads(data['table_top_card'])
+        if flag_deck_top_card:
+            temp = deck.deal(1)
+            deck_top_card = deck[len(deck)-1]
+
+        print(str(data['client_name']) + ' has played ' + str(table_top_card))
         if current_player == 'client_A':
             current_player = 'client_B'
         elif current_player == 'client_B':
@@ -60,39 +76,16 @@ async def client_status(sid, data):
         elif current_player == 'client_C':
             current_player = 'client_A'
 
-    # print(client_statuses, deck.size)
     
-    return {'server_status': server_status, 'current_player' : current_player}
+
+    return {'server_status': server_status, 
+    'current_player' : current_player, 
+    'table_top_card': pickle.dumps(table_top_card), 
+    'deck_top_card': pickle.dumps(deck_top_card), 
+    'global_done':global_done}
 
 def check_for_readiness(client_statuses):
     for client_status in client_statuses.values():
         if client_status != 'ready':
             return False
     return True
-
-
-
-'''
-table_top_card,
-deck_top_card,
-player_turn,
-
-'''
-
-'''
-1. Server sends an emit to all clients for their status. Broadcast loop
-2. Each client emits back a response.
-3. Client responses get stored in a dictionary on the server.
-4. Server doesn't exit the broadcast loop until all clients have responded "ready".
-5. Server then sends a "start" event to all clients.
-
-'''
-
-
-
-'''
-TODO:
-send table_top_card, deck_top_card, hand to client
-create 3 callbacks for these 3 
-the work on ftp and model transmission
-'''
