@@ -3,6 +3,7 @@ import asyncio
 import pickle
 from grandma import Grandma
 from model import Agent
+import argparse
 
 values = {
     "King": 13,
@@ -53,7 +54,11 @@ inverse_suits = {
 loop = asyncio.get_event_loop()
 sio = socketio.AsyncClient()
 
-client_name = 'client_C'
+parser = argparse.ArgumentParser()
+parser.add_argument("--client_name", help="Set the client name",type=str)
+args = parser.parse_args()
+
+client_name = 'client_'+ args.client_name
 
 client_status = 'standby'
 hand = None
