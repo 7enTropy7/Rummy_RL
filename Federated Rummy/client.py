@@ -91,33 +91,37 @@ async def client_status_callback(data):
     deck_top_card = pickle.loads(data['deck_top_card'])
     global_done = data['global_done']
 
-    print('Server Status: ' + str(server_status) + '   Current Player: ' + str(current_player))
-    if server_status == 'ready' and current_player == client_name:
+    if deck_top_card is not None:
 
-        table_top_card, action, probs, crit_val, reward, done, flag_deck_top_card = player.choose_action(table_top_card, deck_top_card)
-        p_score = round(reward,2)
+        print('Server Status: ' + str(server_status) + '   Current Player: ' + str(current_player))
+        if server_status == 'ready' and current_player == client_name:
 
-        print(player.matrix,'\n')
+            table_top_card, action, probs, crit_val, reward, done, flag_deck_top_card = player.choose_action(table_top_card, deck_top_card)
+            p_score = round(reward,2)
 
-        if done:
-            print('############# WINNER ###############')
-            print('\nWinner\'s Hand: \n {}'.format(player.matrix))
-            print('!!!!!!!!!!!! GAME OVER !!!!!!!!!!!!')
-            global_done = True
-        
-        player.remember(player.binary_matrix, action, probs, crit_val, reward, done)
+            print(player.matrix,'\n')
+
+            if done:
+                print('############# WINNER ###############')
+                print('\nWinner\'s Hand: \n {}'.format(player.matrix))
+                print('!!!!!!!!!!!! GAME OVER !!!!!!!!!!!!')
+                global_done = True
             
-        player.learn()
-        # player.model.save_models()
-        
-        print('Reward: {}  Done: {}'.format(p_score,done))
+            player.remember(player.binary_matrix, action, probs, crit_val, reward, done)
+                
+            player.learn()
+            # player.model.save_models()
+            
+            print('Reward: {}  Done: {}'.format(p_score,done))
 
 
-        print('Client ' + str(client_name) + ' has played')
-        has_played = True
+            print('Client ' + str(client_name) + ' has played')
+            has_played = True
+        else:
+            has_played = False
+
     else:
-        has_played = False
-
+        print('Deck Empty. Starting New Game!')
 
 @sio.on('set_hand')
 async def set_hand(data):

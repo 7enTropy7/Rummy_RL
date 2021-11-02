@@ -45,8 +45,9 @@ async def client_status(sid, data):
     global_done = data['global_done']
     flag_deck_top_card = data['flag_deck_top_card']
 
-    if deck.size == 1:
+    if deck.size == 0:
         global_done = True
+        print('Restart Game' + '    Deck Size: ' + str(deck.size))
 
     if global_done:
         server_status = 'GAME OVER'
@@ -60,15 +61,19 @@ async def client_status(sid, data):
 
     if check_for_readiness(client_statuses) and server_status != 'GAME OVER':
         server_status = 'ready'
-        deck_top_card = deck[len(deck)-1]
+        deck_top_card = deck[deck.size-1]
         
-    if server_status == 'ready' and has_played:
+    if server_status == 'ready' and has_played and server_status != 'GAME OVER':
+                
         table_top_card = pickle.loads(data['table_top_card'])
         if flag_deck_top_card:
             temp = deck.deal(1)
-            deck_top_card = deck[len(deck)-1]
+            if deck.size > 0:
+                deck_top_card = deck[deck.size-1]
+            else:
+                deck_top_card = None
 
-        print(str(data['client_name']) + ' has played ' + str(table_top_card))
+        print(str(data['client_name']) + ' has played ' + str(table_top_card) + '    Deck Size: ' + str(deck.size))
         if current_player == 'client_A':
             current_player = 'client_B'
         elif current_player == 'client_B':
