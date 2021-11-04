@@ -70,6 +70,7 @@ table_top_card = None
 deck_top_card = None
 flag_deck_top_card = False
 
+
 agent = Agent(11,(52,),n_epochs=5)
 # agent.load_models()
 
@@ -79,12 +80,12 @@ player = None
 async def connect():
     global client_status
     print('Connected to server')
-    client_status = 'ready'
+    
     sio.start_background_task(track_status)
 
 @sio.event
 async def client_status_callback(data):
-    global server_status, hand, has_played, player, p_score, global_done, table_top_card, deck_top_card, flag_deck_top_card
+    global server_status, client_status, hand, has_played, player, p_score, global_done, table_top_card, deck_top_card, flag_deck_top_card
     server_status = data['server_status']
     current_player = data['current_player']
     table_top_card = pickle.loads(data['table_top_card'])
@@ -93,7 +94,7 @@ async def client_status_callback(data):
 
     if deck_top_card is not None:
 
-        print('Server Status: ' + str(server_status) + '   Current Player: ' + str(current_player))
+        # print('Server Status: ' + str(server_status) + '   Current Player: ' + str(current_player))
         if server_status == 'ready' and current_player == client_name:
 
             table_top_card, action, probs, crit_val, reward, done, flag_deck_top_card = player.choose_action(table_top_card, deck_top_card)
@@ -122,14 +123,17 @@ async def client_status_callback(data):
 
     else:
         print('Deck Empty. Starting New Game!')
+        # client_status = 'standby'
+        has_played = False
 
 @sio.on('set_hand')
 async def set_hand(data):
-    global hand, player, agent, p_score
+    global client_status, hand, player, agent, p_score
     hand = pickle.loads(data['hand'])
     print('Hand set: ', hand)
     player = Grandma(hand,agent)
     p_score = 0
+    client_status = 'ready'
 
 @sio.event
 async def track_status():

@@ -4,6 +4,7 @@ import pickle
 import random
 import pydealer
 from socketio import server
+import sys
 
 sio = socketio.AsyncServer(cors_allowed_origins="*", async_mode='aiohttp', async_handlers=True)
 
@@ -36,23 +37,40 @@ deck.shuffle()
 table_top_card = deck.deal(1)[0]
 deck_top_card = None
 global_done = False
+game_number = 0
 
 @sio.on('client_status')
 async def client_status(sid, data):
-    global server_status, client_statuses, hands, deck, current_player, table_top_card, deck_top_card, global_done
+    global server_status, client_statuses, hands, deck, current_player, table_top_card, deck_top_card, global_done, game_number
     client_statuses[data['client_name']] = data['client_status']
     has_played = data['has_played']
     global_done = data['global_done']
     flag_deck_top_card = data['flag_deck_top_card']
 
     if deck.size == 0:
-        global_done = True
-        print('Restart Game' + '    Deck Size: ' + str(deck.size))
+        global_done = False
+        print('------------------ Restart Game ------------------' + '    Game Count: ' + str(game_number))
+        game_number += 1
+        deck = pydealer.Deck()
+        deck.shuffle()
+        table_top_card = deck.deal(1)[0]
+        deck_top_card = None
+        hands = {'client_A': None, 'client_B': None, 'client_C': None}
+        client_statuses = {'client_A': 'standby', 'client_B': 'standby', 'client_C': 'standby'}
+        current_player = 'client_A'
+        
+        has_played = False
+        server_status = 'standby'
+
 
     if global_done:
         server_status = 'GAME OVER'
+        print('@@@@@@@@@@@@@@@@@@@@@@@ WINNER @@@@@@@@@@@@@@@@@@@@@')
+        print(data['client_name'],' has won the GAME!')
+        sys.exit()
+        
     
-    if client_statuses[data['client_name']] == 'ready' and hands[data['client_name']] is None:
+    if hands[data['client_name']] is None:
         cards = deck.deal(10)
         hand = pydealer.Stack()
         hand.add(cards)
@@ -60,10 +78,12 @@ async def client_status(sid, data):
         await sio.emit('set_hand', {'hand':pickle.dumps(hands[data['client_name']])}, room=sid)
 
     if check_for_readiness(client_statuses) and server_status != 'GAME OVER':
+        # print('Clients are READY.')
+        
         server_status = 'ready'
         deck_top_card = deck[deck.size-1]
         
-    if server_status == 'ready' and has_played and server_status != 'GAME OVER':
+    if server_status == 'ready' and has_played:
                 
         table_top_card = pickle.loads(data['table_top_card'])
         if flag_deck_top_card:
@@ -81,7 +101,6 @@ async def client_status(sid, data):
         elif current_player == 'client_C':
             current_player = 'client_A'
 
-    
 
     return {'server_status': server_status, 
     'current_player' : current_player, 
