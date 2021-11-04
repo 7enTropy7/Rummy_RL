@@ -37,7 +37,7 @@ deck.shuffle()
 table_top_card = deck.deal(1)[0]
 deck_top_card = None
 global_done = False
-game_number = 0
+game_number = 1
 
 @sio.on('client_status')
 async def client_status(sid, data):
