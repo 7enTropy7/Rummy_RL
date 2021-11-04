@@ -4,6 +4,7 @@ import pickle
 from grandma import Grandma
 from model import Agent
 import argparse
+import sys
 
 values = {
     "King": 13,
@@ -84,6 +85,11 @@ async def connect():
     sio.start_background_task(track_status)
 
 @sio.event
+async def disconnect():
+    print('Disconnected from server')
+    sys.exit()
+
+@sio.event
 async def client_status_callback(data):
     global server_status, client_status, hand, has_played, player, p_score, global_done, table_top_card, deck_top_card, flag_deck_top_card
     server_status = data['server_status']
@@ -116,7 +122,7 @@ async def client_status_callback(data):
             print('Reward: {}  Done: {}'.format(p_score,done))
 
 
-            print('Client ' + str(client_name) + ' has played')
+            print(str(client_name) + ' has played.')
             has_played = True
         else:
             has_played = False
