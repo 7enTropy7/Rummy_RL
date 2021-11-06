@@ -56,20 +56,6 @@ async def client_status(sid, data):
         global_done = False
         print('------------------ Restart Game ------------------' + '    Game Count: ' + str(game_number))
         
-        # actor_path = 'incoming_ckpts/actors'
-        # num_act_wts = [name for name in os.listdir(actor_path) if os.path.isfile(os.path.join(actor_path, name))]
-
-        # critic_path = 'incoming_ckpts/critics'
-        # num_crt_wts = [name for name in os.listdir(critic_path) if os.path.isfile(os.path.join(critic_path, name))]
-
-        # print('@@@@@@@@@@@@@@@@@@@@@')
-        # print(num_act_wts,num_crt_wts)
-
-        # if len(num_act_wts) ==3 and len(num_crt_wts) == 3:
-        #     aggregate_models()
-
-
-
         game_number += 1
         deck = pydealer.Deck()
         deck.shuffle()
