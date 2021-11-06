@@ -49,13 +49,12 @@ class PPOMemory:
 
 class ActorNetwork(nn.Module):
     def __init__(self, n_actions, input_dims, alpha,
-            fc1_dims=512, fc2_dims=512, chkpt_dir='ckpt/actors', name=None):
+            fc1_dims=512, fc2_dims=512, chkpt_dir='local_ckpts', name=None):
         super(ActorNetwork, self).__init__()
 
-        if name == 'G':
-            self.checkpoint_file = 'global_ckpt/actor_{}'.format(name)
-        else:
-            self.checkpoint_file = os.path.join(chkpt_dir, 'actor_{}'.format(name))
+        self.save_checkpoint_file = os.path.join(chkpt_dir, 'actor_{}'.format(name))
+        self.load_checkpoint_file = os.path.join(chkpt_dir, 'actor_G'.format(name))
+
         self.actor = nn.Sequential(
                 nn.Linear(*input_dims, fc1_dims),
                 nn.ReLU(),
@@ -76,20 +75,19 @@ class ActorNetwork(nn.Module):
         return dist
 
     def save_checkpoint(self):
-        T.save(self.state_dict(), self.checkpoint_file)
+        T.save(self.state_dict(), self.save_checkpoint_file)
 
     def load_checkpoint(self):
-        self.load_state_dict(T.load(self.checkpoint_file))
+        self.load_state_dict(T.load(self.load_checkpoint_file))
 
 class CriticNetwork(nn.Module):
     def __init__(self, input_dims, alpha, fc1_dims=512, fc2_dims=512,
-            chkpt_dir='ckpt/critics', name=None):
+            chkpt_dir='local_ckpts', name=None):
         super(CriticNetwork, self).__init__()
 
-        if name == 'G':
-            self.checkpoint_file = 'global_ckpt/critic_{}'.format(name)
-        else:
-            self.checkpoint_file = os.path.join(chkpt_dir, 'critic_{}'.format(name))
+        self.save_checkpoint_file = os.path.join(chkpt_dir, 'critic_{}'.format(name))
+        self.load_checkpoint_file = os.path.join(chkpt_dir, 'critic_G'.format(name))
+
         self.critic = nn.Sequential(
                 nn.Linear(*input_dims, fc1_dims),
                 nn.ReLU(),
@@ -108,10 +106,10 @@ class CriticNetwork(nn.Module):
         return value
 
     def save_checkpoint(self):
-        T.save(self.state_dict(), self.checkpoint_file)
+        T.save(self.state_dict(), self.save_checkpoint_file)
 
     def load_checkpoint(self):
-        self.load_state_dict(T.load(self.checkpoint_file))
+        self.load_state_dict(T.load(self.load_checkpoint_file))
         
 
 class Agent:

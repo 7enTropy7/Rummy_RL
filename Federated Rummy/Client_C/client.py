@@ -3,8 +3,12 @@ import asyncio
 import pickle
 from grandma import Grandma
 from model import Agent
-import argparse
 import sys
+import os
+from ftp_client import FTPClient
+
+ftp_client = FTPClient('0.0.0.0', 'grandma', '123')
+
 
 values = {
     "King": 13,
@@ -55,13 +59,11 @@ inverse_suits = {
 loop = asyncio.get_event_loop()
 sio = socketio.AsyncClient()
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--client_name", help="Set the client name",type=str)
-args = parser.parse_args()
-
-client_name = 'client_'+ args.client_name
+tag = 'C'
+client_name = 'client_' + tag
 
 client_status = 'standby'
+ftp_client_status = 'standby'
 hand = None
 server_status = 'standby'
 has_played = False
@@ -70,10 +72,9 @@ global_done = False
 table_top_card = None
 deck_top_card = None
 flag_deck_top_card = False
+game_number = 1
 
-
-agent = Agent(11,(52,),n_epochs=5)
-# agent.load_models()
+agent = Agent(11,(52,),n_epochs=5,name=tag)
 
 player = None
 
@@ -91,15 +92,18 @@ async def disconnect():
 
 @sio.event
 async def client_status_callback(data):
-    global server_status, client_status, hand, has_played, player, p_score, global_done, table_top_card, deck_top_card, flag_deck_top_card
+    global server_status, client_status, hand, has_played, player, p_score, global_done, table_top_card, deck_top_card, flag_deck_top_card, game_number, ftp_client_status
     server_status = data['server_status']
     current_player = data['current_player']
     table_top_card = pickle.loads(data['table_top_card'])
     deck_top_card = pickle.loads(data['deck_top_card'])
     global_done = data['global_done']
+    game_number = data['game_number']
+    ftp_server_status = data['ftp_server_status']
+
 
     if deck_top_card is not None:
-
+        ftp_client_status = 'standby'
         # print('Server Status: ' + str(server_status) + '   Current Player: ' + str(current_player))
         if server_status == 'ready' and current_player == client_name:
 
@@ -117,10 +121,8 @@ async def client_status_callback(data):
             player.remember(player.binary_matrix, action, probs, crit_val, reward, done)
                 
             player.learn()
-            # player.model.save_models()
             
             print('Reward: {}  Done: {}'.format(p_score,done))
-
 
             print(str(client_name) + ' has played.')
             has_played = True
@@ -128,25 +130,61 @@ async def client_status_callback(data):
             has_played = False
 
     else:
-        print('Deck Empty. Starting New Game!')
-        # client_status = 'standby'
+        if game_number > 1:
+
+            if ftp_server_status != 'aggregated' and ftp_client_status == 'standby':
+                player.model.save_models()
+                # Send to FTP Server
+                print('Uploading local model to server...')
+                ftp_client.upload('local_ckpts/actor_'+tag,'incoming_ckpts/actors/actor_'+tag) # server,client
+                ftp_client.upload('local_ckpts/critic_'+tag,'incoming_ckpts/critics/critic_'+tag) # server,client
+                print('Uploaded!')
+                
+                ftp_client_status = 'uploaded'
+                client_status = 'standby'
+
+                dir = 'local_ckpts'
+                for f in os.listdir(dir):
+                    os.remove(os.path.join(dir, f))
+
+            # Get aggregated model from FTP Server
+            if ftp_server_status == 'aggregated' and ftp_client_status == 'uploaded':
+                print('Downloading global model from server...')
+                ftp_client.download('local_ckpts/actor_G','global_ckpt/actor_G') # client,server
+                ftp_client.download('local_ckpts/critic_G','global_ckpt/critic_G') # client,server
+                print('Downloaded!')
+                ftp_client_status = 'downloaded'
+
+                        
+                player.model.load_models()
+                print('Aggregated Model loaded successfully!')
+
+                # Cleanup old model (with name tag)
+                # Cleanup old model (with name 'G')                
+                dir = 'local_ckpts'
+                for f in os.listdir(dir):
+                    os.remove(os.path.join(dir, f))
+            
+        # print('Deck Empty. Starting New Game!')
         has_played = False
 
 @sio.on('set_hand')
 async def set_hand(data):
-    global client_status, hand, player, agent, p_score
+    global client_status, hand, player, agent, p_score, ftp_client_status
     hand = pickle.loads(data['hand'])
     print('Hand set: ', hand)
     player = Grandma(hand,agent)
     p_score = 0
     client_status = 'ready'
+    
 
 @sio.event
 async def track_status():
-    global server_status, client_name, has_played, global_done, table_top_card, flag_deck_top_card
+    global server_status, client_name, has_played, global_done, table_top_card, flag_deck_top_card, ftp_client_status
     while True:
         await sio.emit('client_status',{'client_name':client_name,
         'client_status':client_status, 
+        'ftp_client_status':ftp_client_status,
         'has_played':has_played,
         'global_done':global_done,
         'table_top_card':pickle.dumps(table_top_card),
