@@ -1,7 +1,6 @@
-tensorflow_macos==2.5.0
 torch==1.9.0
-numpy==1.19.5
-keras_nightly==2.5.0.dev2021032900
+numpy==1.20.1
+aiohttp==3.6.2
 pydealer==1.4.0
-keras==2.6.0
-tensorflow==2.6.0
+pyftpdlib==1.5.4
+gevent_socketio==0.3.6
