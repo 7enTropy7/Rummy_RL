@@ -1,6 +1,6 @@
 # Rummy_RL
 
-A Proximal Policy Optimization(PPO) based agent that learns to play rummy by playing against itself.
+This is an application of Federated Learning to train a Proximal Policy Optimization(PPO) based agent that learns to play Rummy by playing against itself.
 
 ## How the game works
 The rules of Gin Rummy are quite simple. For the 3 player format utilized in this repo, we assign each player a hand of 10 cards from a shuffled deck. The game starts with a card from the remaining deck placed on the "table". The goal of the game is for the player to form 3 sets from the hand. A set can either be a running set of cards with consecutive values or a set of duplicate valued cards. The player must form 3 such sets with 4 cards in one of the set and 3 in the other two. Towards this, the player can either take the card on the table or take a new card from the remaining deck and must place a card from the current hand back onto the table. Hence, before and after each turn, a player can have only 10 cards. The game goes turnwise and we declare the end of the game to have occured if there is a winner or if the deck runs out.
