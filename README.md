@@ -10,36 +10,50 @@ We utilize the pydealer library to maintain card, hands and deck objects. We glo
 
 
 ## Self-Play Agent
+Analogous to a dude pulling out 3 chairs on a Rummy table and sitting on the 3 chairs sequentially to play his best cards. This dude is a PPO agent. And it tries to win against itself. Kinda like Fight Club ;P
+
 ```bash
 $ python Rummy\ PPO/main.py
 ```
 
 ## Federated Learning
+Federated learning is an approach that downloads the current model and computes an updated model at the device itself (edge computing) using local data. These locally trained models are then sent from the devices back to the central server where they are aggregated, i.e. averaging weights, and then a single consolidated and improved global model is sent back to the devices.
 
 ### Cloning
 ```bash
 $ git clone https://github.com/7enTropy7/Rummy_RL.git
 ```
+The following steps are to be followed inside the ```Federated Rummy``` subdirectory.
+
+Note that training the PPO agent with Federated Learning will require ```5``` terminals.
+
 ### Initial Setup
+In Terminal 1 execute the following to check for missing folders (if any) for storing models across the server and all clients: 
 ```bash
-$ cd Rummy_RL/Federated\ Rummy/
 $ python reset.py
 ```
+This also removes any old redundant checkpoint files that may be left over from previous training session.
+
 ### Starting Socketio Server
+In Terminal 1, next execute the following command to fire up the Socketio Server.
+
 ```bash
 $ python Server/run_socketio.py
 ```
 ### Starting FTP Server
+In Terminal 2 run the following to start an FTP Server that manages model weights file transmission.
+
 ```bash
 $ python Server/ftp_server.py
 ```
 ### Starting Clients
+In Terminals 3,4 and 5 run one of the following commands each in the right order.
 ```bash
 $ python Client_A/client.py
 $ python Client_B/client.py
 $ python Client_C/client.py    
 ```
-
+Note that Federated training will only get initialized once all 3 clients are connected to the socket server.
 ## Demonstration
 
 ### Federated Learning Agents
