@@ -75,9 +75,10 @@ async def client_status(sid, data):
 
     if global_done:
         server_status = 'GAME OVER'
-        print('@@@@@@@@@@@@@@@@@@@@@@@ WINNER @@@@@@@@@@@@@@@@@@@@@')
+        print('\n\n@@@@@@@@@@@@@@@@@@@@@@@ WINNER @@@@@@@@@@@@@@@@@@@@@')
         print(data['client_name'],' has won the GAME!')
-        sys.exit()
+        print('@@@@@@@@@@@@@@@@@@@@@@@ WINNER @@@@@@@@@@@@@@@@@@@@@\n\n')
+        sys.exit(0)
         
     
     if hands[data['client_name']] is None and (FTP_check_for_downloaded_readiness(ftp_client_statuses) or game_number==1):
