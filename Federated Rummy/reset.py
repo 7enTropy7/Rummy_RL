@@ -3,8 +3,11 @@ import os
 if not os.path.exists('Server/global_ckpt'):
     os.makedirs('Server/global_ckpt')
 
-if not os.path.exists('Server/incoming_ckpts'):
-    os.makedirs('Server/incoming_ckpts')
+if not os.path.exists('Server/incoming_ckpts/actors'):
+    os.makedirs('Server/incoming_ckpts/actors')
+
+if not os.path.exists('Server/incoming_ckpts/critics'):
+    os.makedirs('Server/incoming_ckpts/critics')
 
 if not os.path.exists('Client_A/local_ckpts'):
     os.makedirs('Client_A/local_ckpts')
