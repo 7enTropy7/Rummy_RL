@@ -1,5 +1,4 @@
 from aiohttp import web
-
 from socketio_server import app
 
 if __name__ == '__main__':

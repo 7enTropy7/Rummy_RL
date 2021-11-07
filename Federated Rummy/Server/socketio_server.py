@@ -1,19 +1,14 @@
 import socketio
 from aiohttp import web
 import pickle
-import random
 import pydealer
-from socketio import server
 import sys
-import os
 from utils import aggregate_models
 
 sio = socketio.AsyncServer(cors_allowed_origins="*", async_mode='aiohttp', async_handlers=True)
 
-# Creates a new Aiohttp Web Application
 app = web.Application()
 
-# Binds our Socket.IO server to our Web App instance
 sio.attach(app)
 
 
