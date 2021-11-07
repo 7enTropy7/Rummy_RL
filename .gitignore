@@ -1,3 +1,7 @@
 ../.DS_Store
 .DS_Store
 Rummy\ PPO/__pycache__
+Federated\ Rummy/Server/__pycache__
+Federated\ Rummy/Client_A/__pycache__
+Federated\ Rummy/Client_B/__pycache__
+Federated\ Rummy/Client_C/__pycache__
