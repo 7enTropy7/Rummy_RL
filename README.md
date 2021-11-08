@@ -21,7 +21,10 @@ $ python Rummy\ PPO/main.py
 
 ## Federated Learning
 But Rummy is played by different minds competing against each other. Now imagine that the players are friends outside the game and meet up after every game to discuss how they could have done better, and so our second implementation is a system where three separate instances of the model play each other and aggregate their experiences using Federated Learning. <br>
-Federated learning is an approach that downloads the current model and computes an updated model at the device itself (edge computing) using local data. These locally trained models are then sent from the devices back to the central server where they are aggregated, i.e. averaging weights, and then a single consolidated and improved global model is sent back to the devices.
+<br>
+Federated learning is an approach that downloads the current model and computes an updated model at the device itself (edge computing) using local data. These locally trained models are then sent from the devices back to the central server where they are aggregated, i.e. averaging weights, and then a single consolidated and improved global model is sent back to the devices.<br>
+![0_MMNglGw1zSpS86Yf](https://user-images.githubusercontent.com/36445587/140692368-f2729424-1dbb-4e1e-972a-4587d219fd82.png)
+
 
 ### Cloning
 ```bash
