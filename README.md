@@ -6,7 +6,7 @@
 This is an application of Federated Learning to train a Proximal Policy Optimization(PPO) based agent that learns to play Rummy by playing against itself.
 
 ## How the game works
-The rules of Gin Rummy are quite simple. For the 3 player format utilized in this repo, we assign each player a hand of 10 cards from a shuffled deck. The game starts with a card from the remaining deck placed on the "table". The goal of the game is for the player to form 3 sets from the hand. A set can either be a running set of cards with consecutive values or a set of duplicate valued cards. The player must form 3 such sets with 4 cards in one of the set and 3 in the other two. Towards this, the player can either take the card on the table or take a new card from the remaining deck and must place a card from the current hand back onto the table. <br>
+The rules of Gin Rummy are quite simple. For the 3 player format utilized in this repo, we assign each player a hand of 10 cards from a shuffled deck. The game starts with a card from the remaining deck placed on the "table". The goal of the game is for the player to form 3 sets from the hand. A set can either be a running set of cards with consecutive values freom the same suit or a set of duplicate valued cards. The player must form 3 such sets with 4 cards in one of the set and 3 in the other two. Towards this, the player can either take the card on the table or take a new card from the remaining deck and must place a card from the current hand back onto the table. <br>
 <br>
 ![Rummy21-5c196dbd46e0fb0001070811](https://user-images.githubusercontent.com/36445587/140691014-6531a8bc-da3c-4f57-8db8-3c064dc05354.jpg)
 
@@ -68,15 +68,15 @@ $ python Client_C/client.py
 Note that Federated training will only get initialized once all 3 clients are connected to the socket server.
 ## Demonstration
 
-### Federated Learning Agents
-![ezgif com-gif-maker](https://user-images.githubusercontent.com/36446402/140694721-4d23f8f0-ca5c-4f3e-8d66-5e422da52ee4.gif)
-
-
-<img width="507" alt="Screenshot 2021-11-08 at 11 56 11 AM" src="https://user-images.githubusercontent.com/36446402/140694884-2428326d-559a-4fcf-b535-62874ab90868.png">
-
-
 ### Self-Play Agent
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/36446402/136848216-c9977dcc-d3c5-48ec-bbd0-71c8ff124b1e.gif)
+
+### Federated Learning Agents
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/36446402/140694721-4d23f8f0-ca5c-4f3e-8d66-5e422da52ee4.gif)
+<br>
+And we have a winner! The image below shows that client B obtained the required sets: Duplicate set (1 of Hearts, 1 of Diamonds and 1 of Spades), Running set (9, 10 and 11 of Spades) and another Running set (Jack, Queen and King of Clubs denoted by 11, 12 and 13 respectively)<br>
+
+<img width="507" alt="Screenshot 2021-11-08 at 11 56 11 AM" src="https://user-images.githubusercontent.com/36446402/140694884-2428326d-559a-4fcf-b535-62874ab90868.png">
 
 # Authors
 * [**Anirudh Rajiv Menon**](https://github.com/axe76)
