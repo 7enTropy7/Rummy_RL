@@ -13,13 +13,14 @@ We utilize the pydealer library to maintain card, hands and deck objects. We glo
 
 
 ## Self-Play Agent
-Analogous to a dude pulling out 3 chairs on a Rummy table and sitting on the 3 chairs sequentially to play his best cards. This dude is a PPO agent. And it tries to win against itself. Kinda like Fight Club ;P
+Our first implementation is analogous to a dude pulling out 3 chairs on a Rummy table and sitting on the 3 chairs sequentially to play his best cards. This dude is a PPO agent. And it tries to win against itself. Kinda like Fight Club ;P
 
 ```bash
 $ python Rummy\ PPO/main.py
 ```
 
 ## Federated Learning
+But Rummy is played by different minds competing against each other. Now imagine that the players are friends outside the game and meet up after every game to discuss how they could have done better, and so our second implementation is a system where three separate instances of the model play each other and aggregate their experiences using Federated Learning. <br>
 Federated learning is an approach that downloads the current model and computes an updated model at the device itself (edge computing) using local data. These locally trained models are then sent from the devices back to the central server where they are aggregated, i.e. averaging weights, and then a single consolidated and improved global model is sent back to the devices.
 
 ### Cloning
