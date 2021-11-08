@@ -69,6 +69,10 @@ Note that Federated training will only get initialized once all 3 clients are co
 ## Demonstration
 
 ### Federated Learning Agents
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/36446402/140694721-4d23f8f0-ca5c-4f3e-8d66-5e422da52ee4.gif)
+
+
+<img width="507" alt="Screenshot 2021-11-08 at 11 56 11 AM" src="https://user-images.githubusercontent.com/36446402/140694884-2428326d-559a-4fcf-b535-62874ab90868.png">
 
 
 ### Self-Play Agent
