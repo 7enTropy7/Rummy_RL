@@ -13,7 +13,11 @@ The rules of Gin Rummy are quite simple. For the 3 player format utilized in thi
 Hence, before and after each turn, a player can have only 10 cards. The game goes turnwise and we declare the end of the game to have occured if there is a winner or if the deck runs out.
 
 ## Wrapping the game into an environment
-We utilize the pydealer library to maintain card, hands and deck objects. We globally maintain the values of the card on the "table" and the top card of the remaning deck. Each hand assigned to player is a Pydealer stack dealt from the shuffled deck. The hand is visualised as a 4x13 matrix where the rows are the suits and the columns represent the values. Thus it is easy to track and reward the agent for running sets which occur horizontally in the matrix and duplicate value sets which occur vertically.
+We utilize the pydealer library to maintain card, hands and deck objects. We globally maintain the values of the card on the "table" and the top card of the remaning deck. Each hand assigned to player is a Pydealer stack dealt from the shuffled deck. The hand is visualised as a 4x13 matrix where the rows are the suits and the columns represent the values. <br><br>
+
+![Capture](https://user-images.githubusercontent.com/36445587/140718318-6112e868-2ea2-4ad7-90a0-bc9f48543b6c.JPG)
+
+Thus it is easy to track and reward the agent for running sets which occur horizontally in the matrix and duplicate value sets which occur vertically.
 
 
 ## Self-Play Agent
