@@ -76,7 +76,7 @@ Note that Federated training will only get initialized once all 3 clients are co
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/36446402/140694721-4d23f8f0-ca5c-4f3e-8d66-5e422da52ee4.gif)
 <br>
 <br>
-And we have a winner! The image below shows that client B obtained the required sets: Duplicate set (1 of Hearts, 1 of Diamonds and 1 of Spades), Running set (9, 10 and 11 of Spades) and another Running set (Jack, Queen and King of Clubs denoted by 11, 12 and 13 respectively)<br><br>
+And we have a winner! The image below shows that the player obtained the required sets: Duplicate set (1 of Hearts, 1 of Diamonds and 1 of Spades), Running set (9, 10 and 11 of Spades) and another Running set (Jack, Queen and King of Clubs denoted by 11, 12 and 13 respectively)<br><br>
 
 <img width="507" alt="Screenshot 2021-11-08 at 11 56 11 AM" src="https://user-images.githubusercontent.com/36446402/140694884-2428326d-559a-4fcf-b535-62874ab90868.png">
 
