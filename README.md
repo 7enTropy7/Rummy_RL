@@ -1,3 +1,6 @@
+[![Linkedin](https://img.shields.io/badge/Linkedin-Anirudh%20Menon-success?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/anirudh-menon-0b7764170/)
+[![Linkedin](https://img.shields.io/badge/Linkedin-Unnikrishnan%20Menon-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/unnikrishnan-menon-aa013415a/)
+
 # Rummy_RL
 
 This is an application of Federated Learning to train a Proximal Policy Optimization(PPO) based agent that learns to play Rummy by playing against itself.
@@ -70,4 +73,8 @@ Note that Federated training will only get initialized once all 3 clients are co
 
 ### Self-Play Agent
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/36446402/136848216-c9977dcc-d3c5-48ec-bbd0-71c8ff124b1e.gif)
+
+# Authors
+* [**Anirudh Rajiv Menon**](https://github.com/axe76)
+* [**Unnikrishnan Menon**](https://github.com/7enTropy7)
 
