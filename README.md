@@ -88,5 +88,7 @@ And we have a winner! The image below shows that the player obtained the require
 * [**Unnikrishnan Menon**](https://github.com/7enTropy7)
 
 # License
+[![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
+
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
