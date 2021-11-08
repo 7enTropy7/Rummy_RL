@@ -87,3 +87,6 @@ And we have a winner! The image below shows that the player obtained the require
 * [**Anirudh Rajiv Menon**](https://github.com/axe76)
 * [**Unnikrishnan Menon**](https://github.com/7enTropy7)
 
+# License
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details
+
