@@ -1,4 +1,4 @@
-torch==1.9.0
+torch==1.13.1
 numpy==1.20.1
 aiohttp==3.6.2
 pydealer==1.4.0
